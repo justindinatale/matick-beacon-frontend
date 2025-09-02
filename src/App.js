@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const API_URL = "https://matick-beacon.onrender.com";
 
@@ -35,20 +35,19 @@ function App() {
     alert("Logged in! Token saved.");
   };
 
-  // Fetch projects
-  const fetchProjects = async () => {
+  // Fetch projects (wrapped in useCallback so it doesn’t re-create each render)
+  const fetchProjects = useCallback(async () => {
+    if (!token) return;
     const res = await fetch(`${API_URL}/projects`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     setProjects(data);
-  };
+  }, [token]);
 
   useEffect(() => {
-    if (token) {
-      fetchProjects();
-    }
-  }, [token]);
+    fetchProjects();
+  }, [fetchProjects]);
 
   // Add project
   const handleAddProject = async () => {
@@ -62,6 +61,8 @@ function App() {
     });
     const data = await res.json();
     setProjects([data, ...projects]);
+    setTitle("");
+    setDescription("");
   };
 
   return (
