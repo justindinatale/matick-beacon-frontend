@@ -56,7 +56,6 @@ function App() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    // Sorting by status priority
     const order = { pricing: 1, Design: 2, "Bid submitted": 3, Completed: 4 };
     setProjects(
       data.sort((a, b) => {
