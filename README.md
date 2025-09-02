@@ -1,70 +1,147 @@
-# Getting Started with Create React App
+# 🚀 Matick Beacon — Setup & Deployment Guide
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **Matick Beacon**. This project has a backend (Node + Express + PostgreSQL) and frontend (React). Everything is deployed on **Render.com**.  
 
-## Available Scripts
+Follow these steps exactly (all commands are copy‑and‑paste‑ready).  
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🔹 1. Clone Repos Locally
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Open your terminal and run:  
+```bash
+# Go to Desktop
+cd ~/Desktop
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Clone backend
+git clone https://github.com/justindinatale/Matick-beacon.git
+cd Matick-beacon
+npm install
 
-### `npm test`
+# Return to Desktop
+cd ..
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Clone frontend
+git clone https://github.com/justindinatale/matick-beacon-frontend.git
+cd matick-beacon-frontend
+npm install
+```
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🔹 2. Backend
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Backend is already live:  
+```
+https://matick-beacon.onrender.com
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+If you want to run locally:  
+```bash
+cd ~/Desktop/Matick-beacon
+npm start
+```
 
-### `npm run eject`
+It will start at:  
+```
+http://localhost:5000
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🔹 3. Database
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Users Table
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Projects Table
+```sql
+CREATE TABLE projects (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
 
-## Learn More
+👉 Already set up on Render (`matick-beacon-db`).  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🔹 4. Frontend Local Dev
 
-### Code Splitting
+```bash
+cd ~/Desktop/matick-beacon-frontend
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Visit:  
+```
+http://localhost:3000
+```
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🔹 5. Frontend Deployment on Render
 
-### Making a Progressive Web App
+1. Go to [Render Dashboard](https://render.com/dashboard)  
+2. Click **New → Static Site**  
+3. Link repo: `justindinatale/matick-beacon-frontend`  
+4. Fill in settings:  
+   - **Name:** `matick-beacon-frontend`  
+   - **Build Command:**  
+     ```bash
+     npm install && npm run build
+     ```  
+   - **Publish Directory:**  
+     ```
+     build
+     ```  
+5. Click **Create Static Site**  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+👉 Render gives you final URL:  
+```
+https://matick-beacon-frontend.onrender.com
+```
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🔹 6. API Testing Toolkit (cURL)
 
-### Deployment
+### Register
+```bash
+curl -X POST https://matick-beacon.onrender.com/auth/register   -H "Content-Type: application/json"   -d '{"email":"testuser@example.com","password":"mypassword"}'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Login
+```bash
+curl -X POST https://matick-beacon.onrender.com/auth/login   -H "Content-Type: application/json"   -d '{"email":"testuser@example.com","password":"mypassword"}'
+```
 
-### `npm run build` fails to minify
+### Get Projects
+```bash
+curl https://matick-beacon.onrender.com/projects   -H "Authorization: Bearer YOUR_JWT_HERE"
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Add Project
+```bash
+curl -X POST https://matick-beacon.onrender.com/projects   -H "Authorization: Bearer YOUR_JWT_HERE"   -H "Content-Type: application/json"   -d '{"title":"Demo Project","description":"Created via curl"}'
+```
+
+---
+
+# ✅ Current State
+- Backend: Live  
+- DB: Live  
+- Auth: Working (JWT)  
+- Frontend: Repo ready, local runs fine  
+- Next Step: Deploy frontend on Render  
+
+---
